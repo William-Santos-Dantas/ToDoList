@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import './loading.dart';
 import './todo_list.dart';
+import 'model/todo.dart';
 
 void main() => runApp(MyApp());
 

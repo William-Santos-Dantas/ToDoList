@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:todolist/services/database_services.dart';
+
+import 'loading.dart';
+import 'model/todo.dart';
 
 class ToDoList extends StatefulWidget {
   ToDoList({Key key}) : super(key: key);
@@ -9,7 +13,7 @@ class ToDoList extends StatefulWidget {
 
 class _ToDoListState extends State<ToDoList> {
   bool iscomplete = false;
-  TextEditingController todoController = TextEditingController();
+  TextEditingController todoTitleController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -38,25 +42,35 @@ class _ToDoListState extends State<ToDoList> {
 
   Widget bodyPage() {
     return SafeArea(
-      child: Padding(
-        padding: EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ListView.builder(
-              shrinkWrap: true,
-              itemCount: 5,
-              itemBuilder: (context, index) {
-                return listTile();
-              },
-            )
-          ],
-        ),
+      child: StreamBuilder<List<Todo>>(
+        stream: DatabaseService().listTodos(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Loading();
+          }
+
+          List<Todo> todos = snapshot.data;
+          return Padding(
+            padding: EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: todos.length,
+                  itemBuilder: (context, index) {
+                    return listTile(todos[index]);
+                  },
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }
 
-  Widget listTile(  ) {
+  Widget listTile(Todo todo) {
     return Dismissible(
       key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
       background: Container(
@@ -67,16 +81,17 @@ class _ToDoListState extends State<ToDoList> {
         ),
       ),
       direction: DismissDirection.startToEnd,
+      onDismissed: (direction) async {
+        await DatabaseService().removeTodo(todo.uuid);
+      },
       child: GestureDetector(
-        onTap: () {
-          setState(() {
-            iscomplete = !iscomplete;
-          });
+        onTap: () async {
+          await DatabaseService().completTask(todo.uuid, todo.isComplete);
         },
         child: ListTile(
-          title: Text('One-line with both widgets'),
+          title: Text(todo.title),
           leading: CircleAvatar(
-            child: Icon(iscomplete ? Icons.check : Icons.error),
+            child: Icon(todo.isComplete ? Icons.check : Icons.error),
           ),
         ),
       ),
@@ -109,7 +124,7 @@ class _ToDoListState extends State<ToDoList> {
       children: [
         //Divider(),
         TextFormField(
-          controller: todoController,
+          controller: todoTitleController,
           autofocus: true,
           style: TextStyle(
             fontSize: 18,
@@ -130,9 +145,11 @@ class _ToDoListState extends State<ToDoList> {
             ),
           ),
           child: TextButton(
-            onPressed: () {
-              if(todoController.text.isNotEmpty){
-                print(todoController.text);
+            onPressed: () async {
+              if (todoTitleController.text.isNotEmpty) {
+                await DatabaseService()
+                    .createNewTodo(todoTitleController.text.trim());
+                todoTitleController.text = '';
                 Navigator.pop(context);
               }
             },

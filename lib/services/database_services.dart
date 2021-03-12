@@ -11,17 +11,21 @@ class DatabaseService{
     });
   }
 
-  Future completTask(String uuid) async{
-    return await todosCollection.doc(uuid).update({"isComplete": true});
+  Future completTask(String uuid, bool isComplete) async{
+    return await todosCollection.doc(uuid).update({"isComplete": !isComplete});
+  }
+
+  Future removeTodo(String uuid) async {
+    await todosCollection.doc(uuid).delete();
   }
 
   List<Todo> todoFromFirestore(QuerySnapshot snapshot){
     if(snapshot != null){
-      snapshot.docs.map((e){
+      return snapshot.docs.map((e){
         return Todo(
           isComplete: e.data()['isComplete'],
           title: e.data()['title'],
-          uuid: e.data()['uuid'],
+          uuid: e.id,
         );
       }).toList();
     }else{

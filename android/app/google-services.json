@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "645496740325",
+    "project_id": "todo-app-2640a",
+    "storage_bucket": "todo-app-2640a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:645496740325:android:9345cc4ea33d5cc121f70c",
+        "android_client_info": {
+          "package_name": "nidrah.todolist"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "645496740325-arvpi02i1fdsa8are8v4ho9elitm7hou.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyApRE62Rnaao5TJmHsRnkZeS5OfnYowaMU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "645496740325-arvpi02i1fdsa8are8v4ho9elitm7hou.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

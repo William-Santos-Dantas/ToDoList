@@ -8,17 +8,27 @@ class ToDoList extends StatefulWidget {
 }
 
 class _ToDoListState extends State<ToDoList> {
+  bool iscomplete = false;
+  TextEditingController todoController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'All Todos',
+          'Todo List',
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return dialog();
+            },
+          );
+        },
         backgroundColor: Theme.of(context).primaryColor,
         child: Icon(Icons.add),
       ),
@@ -46,7 +56,7 @@ class _ToDoListState extends State<ToDoList> {
     );
   }
 
-  Widget listTile() {
+  Widget listTile(  ) {
     return Dismissible(
       key: Key(DateTime.now().millisecondsSinceEpoch.toString()),
       background: Container(
@@ -59,16 +69,80 @@ class _ToDoListState extends State<ToDoList> {
       direction: DismissDirection.startToEnd,
       child: GestureDetector(
         onTap: () {
-          print('Teste');
+          setState(() {
+            iscomplete = !iscomplete;
+          });
         },
         child: ListTile(
-          //value: true,
           title: Text('One-line with both widgets'),
           leading: CircleAvatar(
-            child: Icon(true ? Icons.check : Icons.error),
+            child: Icon(iscomplete ? Icons.check : Icons.error),
           ),
         ),
       ),
+    );
+  }
+
+  Widget dialog() {
+    return SimpleDialog(
+      contentPadding: EdgeInsets.symmetric(horizontal: 25, vertical: 20),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+      title: Row(
+        children: [
+          Text(
+            "Add Todo",
+            style: TextStyle(fontSize: 18),
+          ),
+          Spacer(),
+          IconButton(
+            icon: Icon(
+              Icons.cancel,
+              color: Theme.of(context).primaryColor,
+              size: 30,
+            ),
+            onPressed: () => Navigator.pop(context),
+          )
+        ],
+      ),
+      children: [
+        //Divider(),
+        TextFormField(
+          controller: todoController,
+          autofocus: true,
+          style: TextStyle(
+            fontSize: 18,
+            height: 1.5,
+          ),
+          decoration: InputDecoration(
+            hintText: "Title",
+            border: InputBorder.none,
+          ),
+        ),
+        Container(
+          height: 50,
+          width: MediaQuery.of(context).size.width,
+          decoration: BoxDecoration(
+            color: Theme.of(context).primaryColor,
+            borderRadius: BorderRadius.all(
+              Radius.circular(20),
+            ),
+          ),
+          child: TextButton(
+            onPressed: () {
+              if(todoController.text.isNotEmpty){
+                print(todoController.text);
+                Navigator.pop(context);
+              }
+            },
+            child: Text(
+              "ADD",
+              style: TextStyle(color: Colors.black),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
